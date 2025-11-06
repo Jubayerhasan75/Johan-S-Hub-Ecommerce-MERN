@@ -9,7 +9,7 @@ const AdminLoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   
-  const { loginAdmin, adminUserInfo } = useAppContext(); 
+  const { loginAdmin, adminUserInfo } = useAppContext(); // Apnar "niom"
 
   useEffect(() => {
     if (adminUserInfo) {
@@ -37,7 +37,12 @@ const AdminLoginPage: React.FC = () => {
         throw new Error(data.message || 'Login failed');
       }
       
-      loginAdmin(data);
+      // Admin check
+      if (!data.isAdmin) {
+        throw new Error('Not authorized as an admin');
+      }
+
+      loginAdmin(data); // Apnar "niom"
       navigate('/admin/dashboard');
 
     } catch (err) {

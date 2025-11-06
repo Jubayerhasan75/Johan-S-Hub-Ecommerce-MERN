@@ -1,42 +1,18 @@
 import { Product } from '../types';
+import { API_BASE_URL } from '../constants'; // <-- Import kora
 
-/**
- * Fetch all products from the backend server (API_BASE_URL).
- */
 export const fetchProducts = async (): Promise<Product[]> => {
   try {
-    const response = await fetch("API_BASE_URL/api/products");
-
+    // --- SHOTHIK FIX: Ekhane Backticks (``) Use Kora Hoyeche ---
+    const response = await fetch(`${API_BASE_URL}/api/products`);
+    
     if (!response.ok) {
-      throw new Error(`Failed to fetch products: ${response.statusText}`);
+      throw new Error('Network response was not ok');
     }
-
     const data = await response.json();
-    return data as Product[];
-  
+    return data;
   } catch (error) {
-    console.error("Error fetching products:", error);
-    return []; 
+    console.error('Failed to fetch products:', error);
+    return []; // Error hole empty array pathano
   }
 };
-
-/**
- * Fetch a single product by id from the backend.
- * (Used by ProductDetailPage.tsx)
- */
-export const fetchProductById = async (id: string): Promise<Product | null> => {
-   try {
-    const response = await fetch(`API_BASE_URL/api/products/${id}`);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch product (id: ${id}): ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data as Product;
-  
-  } catch (error) {
-    console.error("Error fetching product:", error);
-    return null;
-  }
-}
