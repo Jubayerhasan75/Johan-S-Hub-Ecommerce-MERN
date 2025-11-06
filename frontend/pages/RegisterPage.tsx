@@ -1,54 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { API_BASE_URL } from '../constants'; // <-- Import kora
 
 const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState<string | null>(null); // For password mismatch
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
-  const { userInfo, loginUser } = useAppContext();
+  const location = useLocation();
+  const { userInfo, loginUser } = useAppContext(); // Apnar "niom"
 
-  // Redirect if already logged in
+  const redirect = location.search ? location.search.split('=')[1] : '/';
+
   useEffect(() => {
     if (userInfo) {
-      navigate('/'); // Redirect to homepage if logged in
+      navigate(redirect, { replace: true });
     }
-  }, [userInfo, navigate]);
+  }, [userInfo, navigate, redirect]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setMessage('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
-    setMessage(null);
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/`api/users/register', {
+      // --- SHOTHIK FIX: Ei line-ti-tei apnar bhul chilo ---
+      const response = await fetch(`${API_BASE_URL}/api/users`, { // Register route
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
       });
+      // ---
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
       }
-
-      // Registration successful, log the user in automatically
-      loginUser(data);
+      
+      loginUser(data); // Login after successful registration
       setLoading(false);
-      navigate('/'); // Redirect to homepage after successful registration and login
+      navigate(redirect);
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -66,7 +69,6 @@ const RegisterPage: React.FC = () => {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && <div className="text-red-600 bg-red-100 p-3 rounded-md">{error}</div>}
-          {message && <div className="text-red-600 bg-red-100 p-3 rounded-md">{message}</div>}
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="name" className="sr-only">Name</label>
@@ -78,7 +80,7 @@ const RegisterPage: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-brand-accent focus:border-brand-accent focus:z-10 sm:text-sm"
-                placeholder="Full Name"
+                placeholder="Name"
               />
             </div>
             <div>
@@ -109,21 +111,29 @@ const RegisterPage: React.FC = () => {
                 placeholder="Password"
               />
             </div>
-             <div>
+            <div>
               <label htmlFor="confirm-password"className="sr-only">Confirm Password</label>
               <input
                 id="confirm-password"
-                name="confirm-password"
+                name="confirmPassword"
                 type="password"
-                 autoComplete="new-password"
+                autoComplete="new-password"
                 required
-                 value={confirmPassword}
-                 onChange={(e) => setConfirmPassword(e.target.value)}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-brand-accent focus:border-brand-accent focus:z-10 sm:text-sm"
                 placeholder="Confirm Password"
               />
             </div>
           </div>
+
+          <div className="h-6">
+            <div className="text-sm text-center">
+                <Link to="/login" className="font-medium text-brand-accent hover:text-brand-accent-dark">
+                Already have an account? Sign in
+                </Link>
+            </div>
+           </div>
 
           <div>
             <button
@@ -135,15 +145,9 @@ const RegisterPage: React.FC = () => {
             </button>
           </div>
         </form>
-         <div className="text-sm text-center">
-            <Link to="/login" className="font-medium text-brand-accent hover:text-brand-accent-dark">
-              Already have an account? Sign in
-            </Link>
-          </div>
       </div>
     </div>
   );
 };
 
-// --- ⛔️ Make sure this line exists! ---
 export default RegisterPage;
