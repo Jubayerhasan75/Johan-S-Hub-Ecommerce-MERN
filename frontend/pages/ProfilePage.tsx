@@ -3,11 +3,10 @@ import { useAppContext } from '../context/AppContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Order } from '../types';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
-import { API_BASE_URL } from '../constants'; // <-- Oboshshoi import korun
+import { API_BASE_URL } from '../constants'; // <-- Import kora
 
 const ProfilePage: React.FC = () => {
-  // --- SHOTHIK FIX: Apnar "niom" onusare, 'logout' noy, 'logoutUser' ---
-  const { userInfo, logoutUser } = useAppContext();
+  const { userInfo, logoutUser } = useAppContext(); // Apnar "niom"
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -28,7 +27,8 @@ const ProfilePage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/orders/myorders`, { // Live Link
+        // --- SHOTHIK FIX: Ekhane Backticks (``) Use Kora Hoyeche ---
+        const response = await fetch(`${API_BASE_URL}/api/orders/myorders`, { 
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${userInfo.token}`,
@@ -50,7 +50,7 @@ const ProfilePage: React.FC = () => {
   }, [userInfo, navigate]);
 
   const handleLogout = () => {
-    logoutUser(); // <-- 'logoutUser' call kora
+    logoutUser(); // Apnar "niom"
     navigate('/login');
   };
 
