@@ -45,7 +45,7 @@ const AdminProductEditPage: React.FC = () => {
       setLoading(true);
       const fetchProduct = async () => {
         try {
-          const response = await fetch(`http://localhost:5000/api/products/${id}`);
+          const response = await fetch(`API_BASE_URL/api/products/${id}`);
           if (!response.ok) throw new Error('Product not found');
           const product = await response.json();
           
@@ -93,7 +93,7 @@ const AdminProductEditPage: React.FC = () => {
     setUploading(true);
     setUploadError(null);
     try {
-      const response = await fetch('http://localhost:5000/api/upload', {
+      const response = await fetch('API_BASE_URL/api/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${userInfo.token}`,
@@ -153,9 +153,9 @@ const AdminProductEditPage: React.FC = () => {
       };
 
       if (isNewProduct) {
-        response = await fetch('http://localhost:5000/api/products', apiConfig);
+        response = await fetch('API_BASE_URL/api/products', apiConfig);
       } else {
-        response = await fetch(`http://localhost:5000/api/products/${id}`, apiConfig);
+        response = await fetch(`API_BASE_URL/api/products/${id}`, apiConfig);
       }
       
       const data = await response.json();

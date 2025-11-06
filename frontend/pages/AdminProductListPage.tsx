@@ -16,7 +16,7 @@ const AdminProductListPage: React.FC = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/api/products');
+        const response = await fetch('API_BASE_URL/api/products');
         if (!response.ok) throw new Error('Failed to fetch products');
         const data = await response.json();
         setProducts(data);
@@ -37,7 +37,7 @@ const AdminProductListPage: React.FC = () => {
     }
     try {
       // 2. Delete request-er shathe Token pathano
-      const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      const response = await fetch(`API_BASE_URL/api/products/${productId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${userInfo.token}`,

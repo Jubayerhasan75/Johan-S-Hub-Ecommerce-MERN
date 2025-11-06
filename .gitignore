@@ -1,0 +1,20 @@
+# Node.js dependencies
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Environment files (Passwords/Keys)
+.env
+frontend/.env
+backend/.env
+
+# Build files
+frontend/dist/
+backend/dist/
+
+# Log files
+npm-debug.log
+yarn-error.log
+
+# OS files
+.DS_Store

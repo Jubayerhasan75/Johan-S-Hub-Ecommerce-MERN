@@ -22,7 +22,7 @@ const ProductDetailPage: React.FC = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5000/api/products/${id}`);
+        const response = await fetch(`API_BASE_URL/api/products/${id}`);
         if (!response.ok) {
           throw new Error('Product not found');
         }

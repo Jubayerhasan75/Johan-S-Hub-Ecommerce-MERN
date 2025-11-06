@@ -21,7 +21,7 @@ const AdminOrderListPage: React.FC = () => {
       try {
         setLoading(true);
         
-        const response = await fetch('http://localhost:5000/api/orders', {
+        const response = await fetch('API_BASE_URL/api/orders', {
           headers: {
             'Authorization': `Bearer ${userInfo.token}`, 
           },

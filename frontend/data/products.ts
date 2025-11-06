@@ -1,11 +1,11 @@
 import { Product } from '../types';
 
 /**
- * Fetch all products from the backend server (http://localhost:5000).
+ * Fetch all products from the backend server (API_BASE_URL).
  */
 export const fetchProducts = async (): Promise<Product[]> => {
   try {
-    const response = await fetch("http://localhost:5000/api/products");
+    const response = await fetch("API_BASE_URL/api/products");
 
     if (!response.ok) {
       throw new Error(`Failed to fetch products: ${response.statusText}`);
@@ -26,7 +26,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
  */
 export const fetchProductById = async (id: string): Promise<Product | null> => {
    try {
-    const response = await fetch(`http://localhost:5000/api/products/${id}`);
+    const response = await fetch(`API_BASE_URL/api/products/${id}`);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch product (id: ${id}): ${response.statusText}`);
