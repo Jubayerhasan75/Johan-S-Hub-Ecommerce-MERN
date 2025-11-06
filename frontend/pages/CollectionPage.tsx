@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Product } from '../types';
 import ProductCard from '../components/ProductCard';
 import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { API_BASE_URL } from '../constants'; // <-- SHOTHIK FIX 1: Import kora hoyeche
 
 // Category list
 const CATEGORIES = ['All', 'Over Sized', 'Slim Fit'];
@@ -27,7 +28,8 @@ const CollectionPage: React.FC = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/`api/products');
+        // --- SHOTHIK FIX 2: Ekhane shothikbhabe Backticks (``) Use Kora Hoyeche ---
+        const response = await fetch(`${API_BASE_URL}/api/products`);
         if (!response.ok) {
           throw new Error('Failed to fetch products');
         }
@@ -81,19 +83,17 @@ const CollectionPage: React.FC = () => {
   const endIndex = startIndex + PRODUCTS_PER_PAGE;
   const productsForCurrentPage = sortedProducts.slice(startIndex, endIndex);
 
-  // --- ⛔️ Shothik Fix (Bug #5): Page Change-er Shoy Scroll to Top ---
+  // --- Page Change-er Shoy Scroll to Top ---
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
       
-      // Ei line-ti page-ke scroll kore shobar opore niye jabe
       window.scrollTo({
         top: 0,
-        behavior: 'smooth' // "smooth" effect-er jonno
+        behavior: 'smooth'
       });
     }
   };
-  // --- Pagination Logic Shesh ---
 
   if (loading) return <div className="p-20 text-center"><Loader2 size={48} className="animate-spin text-brand-accent" /></div>;
   if (error) return <div className="p-20 text-center text-red-500">{error}</div>;
@@ -120,7 +120,7 @@ const CollectionPage: React.FC = () => {
                     checked={selectedCategory === category}
                     onChange={(e) => {
                       setSelectedCategory(e.target.value);
-                      setCurrentPage(1); // Filter change korle 1st page-e ferot jabe
+                      setCurrentPage(1); 
                     }}
                     className="h-4 w-4 text-brand-accent focus:ring-brand-accent border-gray-300"
                   />
@@ -139,7 +139,7 @@ const CollectionPage: React.FC = () => {
               value={selectedColor}
               onChange={(e) => {
                 setSelectedColor(e.target.value);
-                setCurrentPage(1); // Filter change korle 1st page-e ferot jabe
+                setCurrentPage(1); 
               }}
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-accent focus:border-brand-accent"
             >
@@ -160,7 +160,7 @@ const CollectionPage: React.FC = () => {
               value={priceRange}
               onChange={(e) => {
                 setPriceRange(Number(e.target.value));
-                setCurrentPage(1); // Filter change korle 1st page-e ferot jabe
+                setCurrentPage(1); 
               }}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-dark"
             />
@@ -177,7 +177,7 @@ const CollectionPage: React.FC = () => {
               value={sortBy}
               onChange={(e) => {
                 setSortBy(e.target.value);
-                setCurrentPage(1); // Filter change korle 1st page-e ferot jabe
+                setCurrentPage(1); 
               }}
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-accent focus:border-brand-accent"
             >
@@ -192,7 +192,6 @@ const CollectionPage: React.FC = () => {
         <main className="lg:col-span-3">
           {productsForCurrentPage.length > 0 ? (
             <div>
-              {/* Product Card-gulo ekhon ekhane show korbe */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
                 {productsForCurrentPage.map(product => (
                   <ProductCard key={product._id} product={product} />
