@@ -3,11 +3,11 @@ import { useAppContext } from '../context/AppContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Order } from '../types';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
-import { API_BASE_URL } from '../constants'; 
+import { API_BASE_URL } from '../constants'; // <-- Oboshshoi import korun
 
 const ProfilePage: React.FC = () => {
-  
-  const { userInfo, logout } = useAppContext();
+  // --- SHOTHIK FIX: Apnar "niom" onusare, 'logout' noy, 'logoutUser' ---
+  const { userInfo, logoutUser } = useAppContext();
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -28,8 +28,7 @@ const ProfilePage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        // Use API_BASE_URL
-        const response = await fetch(`${API_BASE_URL}/api/orders/myorders`, {
+        const response = await fetch(`${API_BASE_URL}/api/orders/myorders`, { // Live Link
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${userInfo.token}`,
@@ -51,7 +50,7 @@ const ProfilePage: React.FC = () => {
   }, [userInfo, navigate]);
 
   const handleLogout = () => {
-    logout(); 
+    logoutUser(); // <-- 'logoutUser' call kora
     navigate('/login');
   };
 
@@ -95,56 +94,31 @@ const ProfilePage: React.FC = () => {
             ) : orders.length === 0 ? (
               <div className="text-center text-gray-500 py-8">You have not placed any orders yet.</div>
             ) : (
-              
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivered</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {orders.map(order => (
-                      <tr key={order._id}>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">...{order._id.substring(18)}</td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">{new Date(order.createdAt).toLocaleDateString()}</td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">৳{order.totalPrice}</td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm">
-                          {order.isPaid ? (
-                            <span className="flex items-center text-green-600">
-                              <CheckCircle size={16} className="mr-1" /> Yes
-                            </span>
-                          ) : (
-                            <span className="flex items-center text-red-600">
-                              <XCircle size={16} className="mr-1" /> No
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm">
-                          {order.isDelivered ? (
-                            <span className="flex items-center text-green-600">
-                              <CheckCircle size={16} className="mr-1" /> Yes
-                            </span>
-                          ) : (
-                            <span className="flex items-center text-yellow-600">
-                              <XCircle size={16} className="mr-1" /> No
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm">
-                          <Link to={`/order/${order._id}`} className="text-brand-dark hover:underline">
-                            Details
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="space-y-4">
+                {orders.map(order => (
+                  <Link key={order._id} to={`/order/${order._id}`} className="block border border-gray-200 rounded-lg p-4 transition-colors hover:bg-gray-50">
+                    <div>
+                      <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-2">
+                        <span className="font-semibold text-gray-800 text-sm sm:text-base">Order ID: ...{order._id.substring(18)}</span>
+                        <span className="text-xs sm:text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="mb-2">
+                        {order.isDelivered ? (
+                          <span className="flex items-center text-green-600 text-sm">
+                            <CheckCircle size={16} className="mr-1" /> Delivered
+                          </span>
+                        ) : (
+                          <span className="flex items-center text-yellow-600 text-sm">
+                            <XCircle size={16} className="mr-1" /> Pending
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-right font-bold mt-2">
+                        Total: ৳{order.totalPrice}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
             )}
           </div>

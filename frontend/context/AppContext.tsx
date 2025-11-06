@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { CartItem, Product, UserInfo, AppContextType } from '../types';
+import { CartItem, Product, UserInfo, AdminUserInfo, AppContextType } from '../types'; // AdminUserInfo import kora
 
-// Action types define what operations we can perform
+// Action types (Ekhane Admin action jog kora)
 type Action =
   | { type: 'CART_ADD_ITEM'; payload: CartItem }
   | { type: 'CART_REMOVE_ITEM'; payload: { productId: string; size: string; color: string } }
@@ -10,13 +10,16 @@ type Action =
   | { type: 'FAVORITES_ADD_ITEM'; payload: Product }
   | { type: 'FAVORITES_REMOVE_ITEM'; payload: string }
   | { type: 'USER_LOGIN'; payload: UserInfo }
-  | { type: 'USER_LOGOUT' };
+  | { type: 'USER_LOGOUT' }
+  // --- NOTUN ADMIN ACTION ---
+  | { type: 'ADMIN_LOGIN'; payload: AdminUserInfo }
+  | { type: 'ADMIN_LOGOUT' };
 
-// This is the shape of our global state
 interface AppState {
   cart: CartItem[];
   favorites: Product[];
   userInfo: UserInfo | null;
+  adminUserInfo: AdminUserInfo | null; // <-- Notun Admin state
 }
 
 // Load initial state from Local Storage
@@ -24,18 +27,18 @@ const initialState: AppState = {
   cart: localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems')!) : [],
   favorites: localStorage.getItem('favorites') ? JSON.parse(localStorage.getItem('favorites')!) : [],
   userInfo: localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!) : null,
+  adminUserInfo: localStorage.getItem('adminUserInfo') ? JSON.parse(localStorage.getItem('adminUserInfo')!) : null, // <-- Admin state load kora
 };
 
 // The Reducer function handles all state updates
 const appReducer = (state: AppState, action: Action): AppState => {
   let newCart;
   switch (action.type) {
-    // --- ⛔️ Shothik Fix: Cart shob _id diye check korbe ---
     case 'CART_ADD_ITEM': {
         const newItem = action.payload;
         const existItemIndex = state.cart.findIndex(
         (item) =>
-            item.product._id === newItem.product._id && // _id check
+            item.product._id === newItem.product._id &&
             item.size === newItem.size &&
             item.color === newItem.color
         );
@@ -49,24 +52,21 @@ const appReducer = (state: AppState, action: Action): AppState => {
         localStorage.setItem('cartItems', JSON.stringify(newCart));
         return { ...state, cart: newCart };
     }
-    // --- ⛔️ Shothik Fix: Delete Button Logic ---
     case 'CART_REMOVE_ITEM': {
       const { productId, size, color } = action.payload;
       newCart = state.cart.filter(
-        (item) => !(item.product._id === productId && item.size === size && item.color === color) // _id check
+        (item) => !(item.product._id === productId && item.size === size && item.color === color)
       );
       localStorage.setItem('cartItems', JSON.stringify(newCart));
       return { ...state, cart: newCart };
     }
-    // --- ⛔️ Shothik Fix: Increase/Decrease Button Logic ---
      case 'CART_UPDATE_QUANTITY': {
       const { productId, size, color, quantity } = action.payload;
-      // Jodi quantity komate komate 0 hoy, tahole auto-delete hobe
       newCart = state.cart.map((item) =>
         item.product._id === productId && item.size === size && item.color === color
           ? { ...item, quantity }
           : item
-      ).filter(item => item.quantity > 0); // Shudhu 0-er cheye beshi quantity rakho
+      ).filter(item => item.quantity > 0);
       
       localStorage.setItem('cartItems', JSON.stringify(newCart));
       return { ...state, cart: newCart };
@@ -75,7 +75,6 @@ const appReducer = (state: AppState, action: Action): AppState => {
       localStorage.removeItem('cartItems');
       return { ...state, cart: [] };
 
-    // --- Favorites (using _id) ---
     case 'FAVORITES_ADD_ITEM': {
       const newItem = action.payload;
       const existItem = state.favorites.find((item) => item._id === newItem._id);
@@ -98,30 +97,35 @@ const appReducer = (state: AppState, action: Action): AppState => {
       localStorage.removeItem('userInfo');
       return { ...state, userInfo: null };
 
+    // --- NOTUN ADMIN REDUCER ---
+    case 'ADMIN_LOGIN':
+      localStorage.setItem('adminUserInfo', JSON.stringify(action.payload));
+      return { ...state, adminUserInfo: action.payload };
+    case 'ADMIN_LOGOUT':
+      localStorage.removeItem('adminUserInfo');
+      return { ...state, adminUserInfo: null };
+    // ---
+
     default:
       return state;
   }
 };
 
-// Create the context
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Create the Provider component
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
-   const addToCart = (product: Product, size: string, color: string) => {
+  // --- Apnar "Niom" Onusare Function ---
+  const addToCart = (product: Product, size: string, color: string) => {
     dispatch({ type: 'CART_ADD_ITEM', payload: { product, quantity: 1, size, color } });
   };
-  
-  // --- ⛔️ Shothik Fix: Ei function-gulo ekhon dispatch korbe ---
   const removeFromCart = (productId: string, size: string, color: string) => {
     dispatch({ type: 'CART_REMOVE_ITEM', payload: { productId, size, color } });
   };
-   const updateQuantity = (productId: string, size: string, color: string, quantity: number) => {
+  const updateQuantity = (productId: string, size: string, color: string, quantity: number) => {
     dispatch({ type: 'CART_UPDATE_QUANTITY', payload: { productId, size, color, quantity } });
   };
-  
   const clearCart = () => {
     dispatch({ type: 'CART_CLEAR' });
   };
@@ -132,7 +136,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const removeFromFavorites = (productId: string) => {
     dispatch({ type: 'FAVORITES_REMOVE_ITEM', payload: productId });
   };
-   const isFavorite = (productId: string) => {
+  const isFavorite = (productId: string) => {
     return state.favorites.some((item) => item._id === productId);
   };
 
@@ -142,6 +146,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const logoutUser = () => {
     dispatch({ type: 'USER_LOGOUT' });
   };
+
+  // --- NOTUN ADMIN FUNCTION (Apnar Admin Page-er jonno) ---
+  const loginAdmin = (adminData: AdminUserInfo) => {
+    dispatch({ type: 'ADMIN_LOGIN', payload: adminData });
+  };
+  const logoutAdmin = () => {
+    dispatch({ type: 'ADMIN_LOGOUT' });
+  };
+  // ---
 
   const contextValue: AppContextType = {
     cart: state.cart,
@@ -156,12 +169,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     userInfo: state.userInfo,
     loginUser,
     logoutUser,
+    // --- Notun function-gulo ekhon "provide" kora hocche ---
+    adminUserInfo: state.adminUserInfo,
+    loginAdmin,
+    logoutAdmin,
   };
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
 };
 
-// Create the custom hook
 export const useAppContext = (): AppContextType => {
   const context = useContext(AppContext);
   if (!context) {

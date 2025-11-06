@@ -1,8 +1,8 @@
-// --- Ei file-ti-i shob error fix korbe ---
+// --- Ei file-ti apnar deya shob file-ke "sync" korbe ---
 
 // --- Product Type ---
 export type Product = {
-  _id: string; // Not 'id', it's '_id'
+  _id: string;
   name: string;
   price: number;
   originalPrice?: number;
@@ -24,8 +24,7 @@ export type CartItem = {
   color: string;
 };
 
-// --- User/Admin Type ---
-// Ekhon 2-dhoroner UserInfo ache
+// --- Auth Types (Apnar "Niom" Onusare) ---
 export type UserInfo = {
   _id: string;
   name: string;
@@ -34,7 +33,7 @@ export type UserInfo = {
   token: string;
 };
 
-export type AdminUserInfo = { // Apnar AdminLoginPage.tsx onusare
+export type AdminUserInfo = {
   _id: string;
   name: string;
   email: string;
@@ -43,7 +42,6 @@ export type AdminUserInfo = { // Apnar AdminLoginPage.tsx onusare
 };
 
 // --- Order Type ---
-// Ami ekhane paymentMethod field-gulo jog kore dichchi, ja porobortite lagbe
 export type Order = {
   _id: string;
   user: { _id: string; name: string; email: string; };
@@ -62,32 +60,29 @@ export type Order = {
   isPaid: boolean;
   isDelivered: boolean;
   createdAt: string;
-  // --- Manual Payment Fields ---
   paymentMethod: string;
   transactionId?: string;
 };
 
-// --- AppContextType (Apnar AppContext.tsx Onusare) ---
+// --- AppContextType (Apnar "Niom" Onusare) ---
 export interface AppContextType {
   cart: CartItem[];
-  // Apnar AppContext.tsx bolche addToCart 3-ta jinis ney
   addToCart: (product: Product, size: string, color: string) => void;
   removeFromCart: (productId: string, size: string, color: string) => void;
   updateQuantity: (productId: string, size: string, color: string, quantity: number) => void;
   clearCart: () => void;
 
   favorites: Product[];
-  // Apnar ProductCard.tsx ei function-gulo khujche
   addToFavorites: (product: Product) => void;
   removeFromFavorites: (productId: string) => void;
   isFavorite: (productId: string) => boolean;
 
-  // --- Auth (Apnar Navbar/AdminDashboard onusare) ---
+  // --- Regular User Auth ---
   userInfo: UserInfo | null;
   loginUser: (userData: UserInfo) => void;
   logoutUser: () => void;
   
-  // --- Admin Auth (Apnar AdminDashboard onusare) ---
+  // --- Admin Auth ---
   adminUserInfo: AdminUserInfo | null;
   loginAdmin: (adminData: AdminUserInfo) => void;
   logoutAdmin: () => void;
