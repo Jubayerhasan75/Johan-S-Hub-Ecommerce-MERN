@@ -93,7 +93,7 @@ const AdminProductEditPage: React.FC = () => {
     setUploading(true);
     setUploadError(null);
     try {
-      const response = await fetch('API_BASE_URL/api/upload', {
+      const response = await fetch(`${API_BASE_URL}/`api/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${userInfo.token}`,
@@ -153,7 +153,7 @@ const AdminProductEditPage: React.FC = () => {
       };
 
       if (isNewProduct) {
-        response = await fetch('API_BASE_URL/api/products', apiConfig);
+        response = await fetch(`${API_BASE_URL}/`api/products', apiConfig);
       } else {
         response = await fetch(`API_BASE_URL/api/products/${id}`, apiConfig);
       }

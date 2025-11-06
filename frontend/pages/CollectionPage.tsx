@@ -27,7 +27,7 @@ const CollectionPage: React.FC = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('API_BASE_URL/api/products');
+        const response = await fetch(`${API_BASE_URL}/`api/products');
         if (!response.ok) {
           throw new Error('Failed to fetch products');
         }
