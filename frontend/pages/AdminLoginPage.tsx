@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { API_BASE_URL } from '../constants'; // <-- Import kora
 
 const AdminLoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -8,23 +9,21 @@ const AdminLoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   
-  // get admin helpers from context
   const { loginAdmin, adminUserInfo } = useAppContext(); 
 
-    // redirect to dashboard if already logged in
-    useEffect(() => {
-      if (adminUserInfo) {
-        navigate('/admin/dashboard');
-      }
-    }, [adminUserInfo, navigate]); // run this effect when adminUserInfo or navigate changes
+  useEffect(() => {
+    if (adminUserInfo) {
+      navigate('/admin/dashboard');
+    }
+  }, [adminUserInfo, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     try {
-  // send login request to backend
-      const response = await fetch('API_BASE_URL/api/users/login', {
+      // --- SHOTHIK FIX: Ekhane Backticks (``) Use Kora Hoyeche ---
+      const response = await fetch(`${API_BASE_URL}/api/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,17 +37,14 @@ const AdminLoginPage: React.FC = () => {
         throw new Error(data.message || 'Login failed');
       }
       
-  // use context to save admin user and navigate to dashboard
-  loginAdmin(data);
-
-  navigate('/admin/dashboard');
+      loginAdmin(data);
+      navigate('/admin/dashboard');
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 
-  // JSX below unchanged
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
