@@ -2,30 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import { fetchProducts } from '../data/products';
 import { Product } from '../types';
 import homeImg from '../assets/home.png'; 
+import { API_BASE_URL } from '../constants'; // <-- Import kora
 
 const HomePage: React.FC = () => {
-  // load products from backend
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);
-      const data = await fetchProducts();
-      setProducts(data);
+      try {
+        // --- SHOTHIK FIX: Ekhane Backticks (``) Use Kora Hoyeche ---
+        const response = await fetch(`${API_BASE_URL}/api/products`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      }
       setLoading(false);
     };
     loadProducts();
   }, []);
-  // derive featured products from loaded state
+  
   const featuredProducts = products.slice(0, 5);
 
   return (
     <div>
-  {/* Hero Section */}
+      {/* Hero Section */}
       <section
         className="relative h-[60vh] md:h-[80vh] bg-cover bg-center flex items-center justify-center text-white"
         style={{ backgroundImage: `url(${homeImg})` }} 
@@ -62,24 +70,21 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-  {/* Main Collection Section */}
+      {/* Main Collection Section */}
       <section className="py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-10">Main Collection</h2>
           
-          {/* show loading state or products */}
           {loading ? (
             <div className="text-center">Loading products...</div>
           ) : (
-            // show products after load
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {featuredProducts.map(product => (
-                <ProductCard key={product._id} product={product} />
+                <ProductCard key={product._id} product={product} /> // ._id fix
               ))}
             </div>
           )}
           
-
           <div className="text-center mt-12">
             <Link to="/collection">
               <button className="bg-brand-dark text-white font-semibold py-3 px-8 rounded-lg hover:bg-gray-700 transition-colors duration-300">
