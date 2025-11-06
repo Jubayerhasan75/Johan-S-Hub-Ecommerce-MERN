@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Loader2, CheckCircle, XCircle, Eye } from 'lucide-react';
 import { Order } from '../types';
 import { useAppContext } from '../context/AppContext';
+import { API_BASE_URL } from '../constants'; // <-- SHOTHIK FIX 1: Import kora
 
 const AdminOrderListPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -21,7 +22,8 @@ const AdminOrderListPage: React.FC = () => {
       try {
         setLoading(true);
         
-        const response = await fetch(`${API_BASE_URL}/`api/orders', {
+        // --- SHOTHIK FIX 2: Ekhane shothikbhabe Backticks (``) Use Kora Hoyeche ---
+        const response = await fetch(`${API_BASE_URL}/api/orders`, {
           headers: {
             'Authorization': `Bearer ${userInfo.token}`, 
           },
@@ -86,7 +88,6 @@ const AdminOrderListPage: React.FC = () => {
                     <Link to={`/admin/order/${order._id}`} className="text-blue-600 hover:text-blue-800">
                       <Eye size={18} className="inline mr-1" /> Details
                     </Link>
-                    {/* Delete button ekhane add kora jete pare, kintu details page-e rakha-i bhalo */}
                   </td>
                 </tr>
               ))}

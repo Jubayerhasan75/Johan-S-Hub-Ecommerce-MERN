@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Loader2, ArrowLeft, Upload } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { API_BASE_URL } from '../constants'; // <-- SHOTHIK FIX 1: Import kora
 
-// --- ⛔️ Shothik Fix (Bug #2): Notun Product interface (originalPrice optional) ---
 interface ProductData {
   name: string;
   price: number;
-  originalPrice?: number; // Ekhon '?' (optional)
+  originalPrice?: number;
   imageUrl: string;
   category: string;
   description: string;
@@ -37,15 +37,14 @@ const AdminProductEditPage: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-
   useEffect(() => {
     if (id) {
-      // --- "Edit" Mode ---
       setIsNewProduct(false);
       setLoading(true);
       const fetchProduct = async () => {
         try {
-          const response = await fetch(`API_BASE_URL/api/products/${id}`);
+          // --- SHOTHIK FIX 2: Ekhane shothikbhabe Backticks (``) Use Kora Hoyeche ---
+          const response = await fetch(`${API_BASE_URL}/api/products/${id}`);
           if (!response.ok) throw new Error('Product not found');
           const product = await response.json();
           
@@ -67,11 +66,10 @@ const AdminProductEditPage: React.FC = () => {
       };
       fetchProduct();
     } else {
-      // --- "Add Product" Mode ---
       setIsNewProduct(true);
       setName('Sample Name');
       setPrice(850);
-      setOriginalPrice(0); // Shurute 0 thakbe
+      setOriginalPrice(0);
       setCategory('Slim Fit');
       setDescription('Sample Description');
       setCountInStock(10);
@@ -93,7 +91,8 @@ const AdminProductEditPage: React.FC = () => {
     setUploading(true);
     setUploadError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/`api/upload', {
+      // --- SHOTHIK FIX 3: Ekhane shothikbhabe Backticks (``) Use Kora Hoyeche ---
+      const response = await fetch(`${API_BASE_URL}/api/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${userInfo.token}`,
@@ -121,8 +120,6 @@ const AdminProductEditPage: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    // --- ⛔️ Shothik "0 Price" Bug Fix (Notun Logic) ---
-    // 1. Prothome productData object toiri kora (originalPrice chara)
     const productData: ProductData = {
       name,
       price: Number(price),
@@ -134,12 +131,9 @@ const AdminProductEditPage: React.FC = () => {
       sizes: sizes.split(',').map(s => s.trim()).filter(Boolean),
     };
 
-    // 2. Shudhu tokhoni originalPrice add koro jodi er man thake EBONG price theke boro hoy
     if (originalPrice && Number(originalPrice) > Number(price)) {
       productData.originalPrice = Number(originalPrice);
     }
-    // (Jodi na hoy, tahole "originalPrice" field-ti object-ei thakbe na, fole database-e "undefined" hishebe jabe)
-    // --- Notun Logic Shesh ---
 
     try {
       let response;
@@ -153,9 +147,11 @@ const AdminProductEditPage: React.FC = () => {
       };
 
       if (isNewProduct) {
-        response = await fetch(`${API_BASE_URL}/`api/products', apiConfig);
+        // --- SHOTHIK FIX 4: Ekhane shothikbhabe Backticks (``) Use Kora Hoyeche ---
+        response = await fetch(`${API_BASE_URL}/api/products`, apiConfig);
       } else {
-        response = await fetch(`API_BASE_URL/api/products/${id}`, apiConfig);
+        // --- SHOTHIK FIX 5: Ekhane shothikbhabe Backticks (``) Use Kora Hoyeche ---
+        response = await fetch(`${API_BASE_URL}/api/products/${id}`, apiConfig);
       }
       
       const data = await response.json();
@@ -228,11 +224,11 @@ const AdminProductEditPage: React.FC = () => {
               id="image-upload"
               onChange={uploadFileHandler}
               className="block w-full text-sm text-gray-500
-                         file:mr-4 file:py-2 file:px-4
-                         file:rounded-md file:border-0
-                         file:text-sm file:font-semibold
-                         file:bg-brand-accent-light file:text-brand-dark
-                         hover:file:bg-brand-accent-light/80"
+                          file:mr-4 file:py-2 file:px-4
+                          file:rounded-md file:border-0
+                          file:text-sm file:font-semibold
+                          file:bg-brand-accent-light file:text-brand-dark
+                          hover:file:bg-brand-accent-light/80"
             />
             {uploading && <Loader2 size={24} className="animate-spin text-brand-accent" />}
           </div>

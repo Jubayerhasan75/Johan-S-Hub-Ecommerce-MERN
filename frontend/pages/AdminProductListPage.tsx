@@ -3,20 +3,22 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Loader2, Plus, Edit, Trash2 } from 'lucide-react';
 import { Product } from '../types';
 import { useAppContext } from '../context/AppContext';
+import { API_BASE_URL } from '../constants'; // <-- SHOTHIK FIX 1: Import kora
 
 const AdminProductListPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const { userInfo } = useAppContext(); // Token-er jonno userInfo
+  const { userInfo } = useAppContext(); 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/`api/products');
+        // --- SHOTHIK FIX 2: Ekhane shothikbhabe Backticks (``) Use Kora Hoyeche ---
+        const response = await fetch(`${API_BASE_URL}/api/products`);
         if (!response.ok) throw new Error('Failed to fetch products');
         const data = await response.json();
         setProducts(data);
@@ -29,15 +31,13 @@ const AdminProductListPage: React.FC = () => {
     fetchProducts();
   }, []);
 
-  // --- ⛔️ Shothik Fix: "Delete" button-er kaj ---
   const handleDelete = async (productId: string) => {
-    // 1. Token check kora
     if (!userInfo || !userInfo.token || !window.confirm('Are you sure you want to delete this product?')) {
       return;
     }
     try {
-      // 2. Delete request-er shathe Token pathano
-      const response = await fetch(`API_BASE_URL/api/products/${productId}`, {
+      // --- SHOTHIK FIX 3: Ekhane shothikbhabe Backticks (``) Use Kora Hoyeche ---
+      const response = await fetch(`${API_BASE_URL}/api/products/${productId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${userInfo.token}`,
@@ -46,7 +46,7 @@ const AdminProductListPage: React.FC = () => {
       if (!response.ok) {
         throw new Error('Failed to delete product');
       }
-      setProducts(products.filter(p => p._id !== productId)); // List theke shoriye deya
+      setProducts(products.filter(p => p._id !== productId));
       alert('Product deleted successfully');
     } catch (err) {
       alert(err instanceof Error ? err.message : 'An error occurred');
@@ -61,7 +61,7 @@ const AdminProductListPage: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Manage Products ({products.length})</h1>
         <Link
-          to="/admin/product/new/edit" // "Add Product" button (ja kaj korche)
+          to="/admin/product/new/edit" 
           className="inline-flex items-center px-4 py-2 bg-brand-dark text-white rounded-md hover:bg-gray-700"
         >
           <Plus size={20} className="mr-2" />
@@ -91,11 +91,9 @@ const AdminProductListPage: React.FC = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">৳{product.price}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.countInStock}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-4">
-                  {/* --- ⛔️ Shothik Fix: "Edit" button-er link --- */}
                   <Link to={`/admin/product/edit/${product._id}`} className="text-blue-600 hover:text-blue-800">
                     <Edit size={18} className="inline" />
                   </Link>
-                  {/* --- ⛔️ Shothik Fix: "Delete" button-er handler --- */}
                   <button
                     onClick={() => handleDelete(product._id)}
                     className="text-red-600 hover:text-red-800"

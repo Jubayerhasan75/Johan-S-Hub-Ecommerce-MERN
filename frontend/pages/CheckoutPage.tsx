@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { Loader2, Trash2, Plus, Minus } from 'lucide-react';
 import { Order } from '../types';
+import { API_BASE_URL } from '../constants'; // <-- SHOTHIK FIX 1: Import kora
 
 const CheckoutPage: React.FC = () => {
   const { cart, clearCart, userInfo, updateQuantity, removeFromCart } = useAppContext();
@@ -32,7 +33,7 @@ const CheckoutPage: React.FC = () => {
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!userInfo || !userInfo.token) { // Token check
+    if (!userInfo || !userInfo.token) { 
       setError('You must be logged in to place an order.');
       navigate('/login?redirect=/checkout'); 
       return;
@@ -59,11 +60,11 @@ const CheckoutPage: React.FC = () => {
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/`api/orders', {
+      // --- SHOTHIK FIX 2: Ekhane shothikbhabe Backticks (``) Use Kora Hoyeche ---
+      const response = await fetch(`${API_BASE_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // --- ⛔️ Shothik Fix: Token-ti ekhon pathano hocche ---
           'Authorization': `Bearer ${userInfo.token}`,
         },
         body: JSON.stringify(orderData),
