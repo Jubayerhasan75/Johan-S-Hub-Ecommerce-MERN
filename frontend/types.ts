@@ -1,6 +1,8 @@
+// --- Ei file-ti-i shob error fix korbe ---
+
 // --- Product Type ---
 export type Product = {
-  _id: string;
+  _id: string; // Not 'id', it's '_id'
   name: string;
   price: number;
   originalPrice?: number;
@@ -14,58 +16,6 @@ export type Product = {
   updatedAt?: string;
 };
 
-// --- Order Types ---
-export type OrderItem = {
-  name: string;
-  quantity: number;
-  size: string;
-  color: string;
-  price: number;
-  imageUrl: string;
-  product: string; // Product ID
-};
-
-export type ShippingAddress = {
-  address: string;
-  city: string;
-};
-
-export type CustomerInfo = {
-  name: string;
-  phone: string;
-  email: string;
-};
-
-// --- NOTUN PAYMENT FIELD JOG KORA HOYECHE ---
-export type Order = {
-  _id: string;
-  user: { _id: string; name: string; email: string; };
-  customerInfo: CustomerInfo;
-  orderItems: OrderItem[];
-  shippingAddress: ShippingAddress;
-  totalPrice: number;
-  
-  // --- Payment Fields (Notun) ---
-  paymentMethod: string;
-  transactionId?: string; // Optional
-  isPaid: boolean;
-  paidAt?: string; // Optional
-  // ---
-
-  isDelivered: boolean;
-  deliveredAt?: string; // Optional
-  createdAt: string;
-};
-
-// --- User Type ---
-export type UserInfo = {
-  _id: string;
-  name: string;
-  email: string;
-  isAdmin: boolean;
-  token: string;
-};
-
 // --- Cart Type ---
 export type CartItem = {
   product: Product;
@@ -74,20 +24,71 @@ export type CartItem = {
   color: string;
 };
 
+// --- User/Admin Type ---
+// Ekhon 2-dhoroner UserInfo ache
+export type UserInfo = {
+  _id: string;
+  name: string;
+  email: string;
+  isAdmin: boolean;
+  token: string;
+};
 
-export type AppContextType = {
+export type AdminUserInfo = { // Apnar AdminLoginPage.tsx onusare
+  _id: string;
+  name: string;
+  email: string;
+  isAdmin: boolean;
+  token: string;
+};
+
+// --- Order Type ---
+// Ami ekhane paymentMethod field-gulo jog kore dichchi, ja porobortite lagbe
+export type Order = {
+  _id: string;
+  user: { _id: string; name: string; email: string; };
+  customerInfo: { name: string; phone: string; email: string; };
+  orderItems: {
+    name: string;
+    quantity: number;
+    size: string;
+    color: string;
+    price: number;
+    imageUrl: string;
+    product: string;
+  }[];
+  shippingAddress: { address: string; city: string; };
+  totalPrice: number;
+  isPaid: boolean;
+  isDelivered: boolean;
+  createdAt: string;
+  // --- Manual Payment Fields ---
+  paymentMethod: string;
+  transactionId?: string;
+};
+
+// --- AppContextType (Apnar AppContext.tsx Onusare) ---
+export interface AppContextType {
   cart: CartItem[];
-  addToCart: (item: CartItem) => void;
+  // Apnar AppContext.tsx bolche addToCart 3-ta jinis ney
+  addToCart: (product: Product, size: string, color: string) => void;
   removeFromCart: (productId: string, size: string, color: string) => void;
   updateQuantity: (productId: string, size: string, color: string, quantity: number) => void;
   clearCart: () => void;
-  
+
   favorites: Product[];
-  addFavorite: (product: Product) => void;
-  removeFavorite: (productId: string) => void;
+  // Apnar ProductCard.tsx ei function-gulo khujche
+  addToFavorites: (product: Product) => void;
+  removeFromFavorites: (productId: string) => void;
   isFavorite: (productId: string) => boolean;
-  
+
+  // --- Auth (Apnar Navbar/AdminDashboard onusare) ---
   userInfo: UserInfo | null;
-  login: (data: UserInfo) => void; 
-  logout: () => void; 
-};
+  loginUser: (userData: UserInfo) => void;
+  logoutUser: () => void;
+  
+  // --- Admin Auth (Apnar AdminDashboard onusare) ---
+  adminUserInfo: AdminUserInfo | null;
+  loginAdmin: (adminData: AdminUserInfo) => void;
+  logoutAdmin: () => void;
+}
