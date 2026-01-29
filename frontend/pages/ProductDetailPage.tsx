@@ -91,7 +91,7 @@ const ProductDetailPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
-        <div className="bg-white p-4 rounded-lg shadow-md sticky top-24">
+        <div className="bg-white p-4 rounded-lg shadow-md lg:sticky lg:top-24">
           <img src={product.imageUrl} alt={product.name} className="w-full h-auto object-cover rounded-lg" />
         </div>
 
