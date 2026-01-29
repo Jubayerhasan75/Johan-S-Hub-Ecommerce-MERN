@@ -103,7 +103,7 @@ const CollectionPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         
         {/* --- Filter Panel (Sidebar) --- */}
-        <aside className="lg:col-span-1 bg-white p-6 rounded-lg shadow-md h-fit sticky top-24">
+        <aside className="lg:col-span-1 bg-white p-6 rounded-lg shadow-md h-fit lg:sticky lg:top-24">
           <h2 className="text-2xl font-semibold mb-6">Filters</h2>
           
           {/* Category Filter */}
