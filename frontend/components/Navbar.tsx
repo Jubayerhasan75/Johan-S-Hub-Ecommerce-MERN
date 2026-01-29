@@ -158,22 +158,36 @@ const Navbar: React.FC = () => {
                  {/* Count removed for simplicity */}
               </NavLink>
 
-              {/* --- Mobile User Icon Logic --- */}
               {userInfo ? (
-                 userInfo.isAdmin ? (
-                     <NavLink to="/admin/dashboard" className={({ isActive }) => `text-gray-600 hover:text-brand-accent ${isActive ? 'text-brand-accent' : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <User size={24} /> (Admin)
-                     </NavLink>
-                 ) : (
-                     <NavLink to="/profile" className={({ isActive }) => `text-gray-600 hover:text-brand-accent ${isActive ? 'text-brand-accent' : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <User size={24} /> (Profile)
-                     </NavLink>
-                 )
-              ) : (
-                <NavLink to="/login" className={({ isActive }) => `text-gray-600 hover:text-brand-accent ${isActive ? 'text-brand-accent' : ''}`} onClick={() => setIsMenuOpen(false)}>
-                  <User size={24} /> (Login)
-                </NavLink>
-              )}
+  userInfo.isAdmin ? (
+    <NavLink 
+      to="/admin/dashboard" 
+      className={({ isActive }) => `flex flex-col items-center text-gray-600 hover:text-brand-accent ${isActive ? 'text-brand-accent' : ''}`} 
+      onClick={() => setIsMenuOpen(false)}
+    >
+      <User size={24} />
+      <span className="text-[10px] font-medium mt-1">Admin</span>
+    </NavLink>
+  ) : (
+    <NavLink 
+      to="/profile" 
+      className={({ isActive }) => `flex flex-col items-center text-gray-600 hover:text-brand-accent ${isActive ? 'text-brand-accent' : ''}`} 
+      onClick={() => setIsMenuOpen(false)}
+    >
+      <User size={24} />
+      <span className="text-[10px] font-medium mt-1">Profile</span>
+    </NavLink>
+  )
+) : (
+  <NavLink 
+    to="/login" 
+    className={({ isActive }) => `flex flex-col items-center text-gray-600 hover:text-brand-accent ${isActive ? 'text-brand-accent' : ''}`} 
+    onClick={() => setIsMenuOpen(false)}
+  >
+    <User size={24} />
+    <span className="text-[10px] font-medium mt-1">Login</span>
+  </NavLink>
+)}
              {/* Mobile Logout (Show if logged in) */}
              {userInfo && (
                  <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="text-red-600 hover:text-red-800">
