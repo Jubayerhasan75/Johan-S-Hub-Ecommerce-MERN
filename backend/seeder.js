@@ -4,7 +4,7 @@ import User from './models/User.js';
 import Order from './models/Order.js';
 import Product from './models/Product.js';
 import adminUser from './data/adminUser.js';
-import products from './data/products.js'; //
+import products from './data/products.js';
 
 dotenv.config();
 
